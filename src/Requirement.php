@@ -23,6 +23,8 @@ abstract readonly class Requirement
     private const string VERSION_COMPARISON = "/(?P<operator>!=|<|<=|<>|=|==|>|>=)?\s*(?P<version>[\d\.-]+(dev|(RC|alpha|beta)[\d\.])?)[ \t]*\r?$/m";
 
     /**
+     * @param non-empty-string $versionRequirement
+     *
      * @throws InvalidVersionOperatorException
      * @throws InvalidVersionRequirementException
      */

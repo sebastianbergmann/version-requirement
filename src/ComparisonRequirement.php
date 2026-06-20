@@ -18,9 +18,15 @@ use function version_compare;
  */
 final readonly class ComparisonRequirement extends Requirement
 {
+    /**
+     * @var non-empty-string
+     */
     private string $version;
     private VersionComparisonOperator $operator;
 
+    /**
+     * @param non-empty-string $version
+     */
     public function __construct(string $version, VersionComparisonOperator $operator)
     {
         $this->version  = $version;
@@ -32,11 +38,17 @@ final readonly class ComparisonRequirement extends Requirement
         return version_compare($version, $this->version, $this->operator->asString());
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function asString(): string
     {
         return $this->operator->asString() . ' ' . $this->version;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function version(): string
     {
         return $this->version;
