@@ -17,14 +17,14 @@ use PHPUnit\Framework\TestCase;
 #[Small]
 final class InvalidVersionRequirementTest extends TestCase
 {
-    public function testCanBeRepresentedAsString(): void
+    public function testCanBeRepresentedAsAString(): void
     {
         $requirement = new InvalidVersionRequirement('message');
 
         $this->assertSame('message', $requirement->asString());
     }
 
-    public function testIsNeverSatisfied(): void
+    public function testIsNeverSatisfiedByAnyVersion(): void
     {
         $requirement = new InvalidVersionRequirement('message');
 

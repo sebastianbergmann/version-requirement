@@ -13,6 +13,7 @@ use PharIo\Version\VersionConstraintParser;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
+use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
@@ -25,29 +26,29 @@ use PHPUnit\Framework\TestCase;
 final class RequirementTest extends TestCase
 {
     /**
-     * @return non-empty-list<array{bool, string, ConstraintRequirement}>
+     * @return non-empty-list<array{string, string, bool}>
      */
     public static function constraintProvider(): array
     {
         return [
-            [true, '1.0.0', new ConstraintRequirement((new VersionConstraintParser)->parse('1.0.0'))],
-            [false, '2.0.0', new ConstraintRequirement((new VersionConstraintParser)->parse('1.0.0'))],
-            [true, '1.5.0', new ConstraintRequirement((new VersionConstraintParser)->parse('^1.0'))],
-            [false, '2.0.0', new ConstraintRequirement((new VersionConstraintParser)->parse('^1.0'))],
-            [true, '8.4.1-dev', new ConstraintRequirement((new VersionConstraintParser)->parse('^8.4'))],
+            ['1.0.0', '1.0.0', true],
+            ['1.0.0', '2.0.0', false],
+            ['^1.0', '1.5.0', true],
+            ['^1.0', '2.0.0', false],
+            ['^8.4', '8.4.1-dev', true],
         ];
     }
 
     /**
-     * @return non-empty-list<array{bool, string, ComparisonRequirement}>
+     * @return non-empty-list<array{non-empty-string, string, string, bool}>
      */
     public static function comparisonProvider(): array
     {
         return [
-            [true, '1.0.0', new ComparisonRequirement('1.0.0', new VersionComparisonOperator('='))],
-            [false, '1.0.1', new ComparisonRequirement('1.0.0', new VersionComparisonOperator('='))],
-            [true, '1.0.1', new ComparisonRequirement('1.0.0', new VersionComparisonOperator('>='))],
-            [false, '0.9.0', new ComparisonRequirement('1.0.0', new VersionComparisonOperator('>='))],
+            ['1.0.0', '=', '1.0.0', true],
+            ['1.0.0', '=', '1.0.1', false],
+            ['1.0.0', '>=', '1.0.1', true],
+            ['1.0.0', '>=', '0.9.0', false],
         ];
     }
 
@@ -57,12 +58,6 @@ final class RequirementTest extends TestCase
 
         $this->assertInstanceOf(ConstraintRequirement::class, $requirement);
         $this->assertSame('^1.0', $requirement->asString());
-    }
-
-    #[DataProvider('constraintProvider')]
-    public function testVersionRequirementCanBeCheckedUsingVersionConstraint(bool $expected, string $version, ConstraintRequirement $requirement): void
-    {
-        $this->assertSame($expected, $requirement->isSatisfiedBy($version));
     }
 
     public function testCanBeCreatedFromStringWithSimpleComparison(): void
@@ -83,16 +78,36 @@ final class RequirementTest extends TestCase
         $this->assertSame('1.0.0dev', $requirement->version());
     }
 
-    #[DataProvider('comparisonProvider')]
-    public function testVersionRequirementCanBeCheckedUsingSimpleComparison(bool $expected, string $version, ComparisonRequirement $requirement): void
-    {
-        $this->assertSame($expected, $requirement->isSatisfiedBy($version));
-    }
-
     public function testCannotBeCreatedFromInvalidString(): void
     {
         $this->expectException(InvalidVersionRequirementException::class);
 
         Requirement::from('invalid');
+    }
+
+    #[DataProvider('constraintProvider')]
+    #[TestDox('Version constraint "$constraint" is satisfied by version "$version": $satisfied')]
+    public function testVersionConstraintCanBeCheckedAgainstVersion(string $constraint, string $version, bool $satisfied): void
+    {
+        $requirement = new ConstraintRequirement(
+            (new VersionConstraintParser)->parse($constraint),
+        );
+
+        $this->assertSame($satisfied, $requirement->isSatisfiedBy($version));
+    }
+
+    /**
+     * @param non-empty-string $requiredVersion
+     */
+    #[DataProvider('comparisonProvider')]
+    #[TestDox('Comparison "$operator $requiredVersion" is satisfied by version "$version": $satisfied')]
+    public function testSimpleComparisonCanBeCheckedAgainstVersion(string $requiredVersion, string $operator, string $version, bool $satisfied): void
+    {
+        $requirement = new ComparisonRequirement(
+            $requiredVersion,
+            new VersionComparisonOperator($operator),
+        );
+
+        $this->assertSame($satisfied, $requirement->isSatisfiedBy($version));
     }
 }
