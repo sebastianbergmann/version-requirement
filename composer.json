@@ -1,8 +1,8 @@
 {
-    "name": "sebastian/version-string",
-    "description": "Library for parsing version strings",
+    "name": "sebastian/version-requirement",
+    "description": "Library for working with version requirements",
     "type": "library",
-    "homepage": "https://github.com/sebastianbergmann/version-string",
+    "homepage": "https://github.com/sebastianbergmann/version-requirement",
     "license": "BSD-3-Clause",
     "authors": [
         {
@@ -12,8 +12,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/sebastianbergmann/version-string/issues",
-        "security": "https://github.com/sebastianbergmann/version-string/security/policy"
+        "issues": "https://github.com/sebastianbergmann/version-requirement/issues",
+        "security": "https://github.com/sebastianbergmann/version-requirement/security/policy"
     },
     "prefer-stable": true,
     "require": {

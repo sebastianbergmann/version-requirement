@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 $header = <<<'EOF'
-This file is part of sebastian/version-string.
+This file is part of sebastian/version-requirement.
 
 (c) Sebastian Bergmann <sebastian@phpunit.de>
 

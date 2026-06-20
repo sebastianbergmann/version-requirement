@@ -1,11 +1,11 @@
-# Contributing to `sebastian/version-string`
+# Contributing to `sebastian/version-requirement`
 
 ## Welcome!
 
 We look forward to your contributions! Here are some examples how you can contribute:
 
-* [Report a bug](https://github.com/sebastianbergmann/version-string/issues/new)
-* [Send a pull request to fix a bug](https://github.com/sebastianbergmann/version-string/pulls)
+* [Report a bug](https://github.com/sebastianbergmann/version-requirement/issues/new)
+* [Send a pull request to fix a bug](https://github.com/sebastianbergmann/version-requirement/pulls)
 
 
 ## We have a Code of Conduct
@@ -15,7 +15,7 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Any contributions you make will be under the BSD-3-Clause License
 
-When you submit code changes, your submissions are understood to be under the same [BSD-3-Clause License](https://github.com/sebastianbergmann/version-string/blob/main/LICENSE) that covers the project. By contributing to this project, you agree that your contributions will be licensed under its BSD-3-Clause License.
+When you submit code changes, your submissions are understood to be under the same [BSD-3-Clause License](https://github.com/sebastianbergmann/version-requirement/blob/main/LICENSE) that covers the project. By contributing to this project, you agree that your contributions will be licensed under its BSD-3-Clause License.
 
 
 ### Do Not Violate Copyright

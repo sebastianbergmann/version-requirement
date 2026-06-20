@@ -41,5 +41,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_TAG }}
-          name: sebastian/version-string ${{ env.RELEASE_TAG }}
+          name: sebastian/version-requirement ${{ env.RELEASE_TAG }}
           bodyFile: release-notes.md
