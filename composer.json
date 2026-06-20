@@ -1,0 +1,42 @@
+{
+    "name": "sebastian/version-string",
+    "description": "Library for parsing version strings",
+    "type": "library",
+    "homepage": "https://github.com/sebastianbergmann/version-string",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Sebastian Bergmann",
+            "email": "sebastian@phpunit.de",
+            "role": "lead"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/sebastianbergmann/version-string/issues",
+        "security": "https://github.com/sebastianbergmann/version-string/security/policy"
+    },
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.2"
+    },
+    "config": {
+        "platform": {
+            "php": "8.4.1"
+        },
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0-dev"
+        }
+    }
+}
