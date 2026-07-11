@@ -36,7 +36,7 @@ abstract readonly class Requirement
                     $versionRequirement,
                 ),
             );
-        } catch (UnsupportedVersionConstraintException) {
+        } catch (UnsupportedVersionConstraintException $exception) {
             if (preg_match(self::VERSION_COMPARISON, $versionRequirement, $matches) > 0) {
                 return new ComparisonRequirement(
                     $matches['version'],
@@ -45,9 +45,9 @@ abstract readonly class Requirement
                     ),
                 );
             }
-        }
 
-        throw new InvalidVersionRequirementException;
+            throw new InvalidVersionRequirementException($exception->getMessage());
+        }
     }
 
     abstract public function isSatisfiedBy(string $version): bool;

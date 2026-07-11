@@ -81,6 +81,7 @@ final class RequirementTest extends TestCase
     public function testCannotBeCreatedFromInvalidString(): void
     {
         $this->expectException(InvalidVersionRequirementException::class);
+        $this->expectExceptionMessageIsOrContains('Version constraint invalid is not supported.');
 
         Requirement::from('invalid');
     }
