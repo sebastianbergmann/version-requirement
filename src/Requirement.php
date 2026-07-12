@@ -61,6 +61,11 @@ abstract readonly class Requirement
      *
      * Comparing an incomplete version may not behave as intended:
      * version_compare('8.5.0', '8.5', '<=') is false, for example.
+     *
+     * Version constraints such as "^8.5" or "8.5.*" are always considered
+     * complete: they are not evaluated using version_compare(), and their
+     * semantics are well-defined even when major, minor, and patch level
+     * are not specified ("^8.5" means ">= 8.5.0, < 9.0.0", for example).
      */
     public function isComplete(): bool
     {

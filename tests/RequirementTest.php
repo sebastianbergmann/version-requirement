@@ -60,10 +60,14 @@ final class RequirementTest extends TestCase
         return [
             ['>= 8.5.0', true],
             ['>= 8.5', false],
+            ['>= 8', false],
             ['<= 8', false],
             ['8.5.0', true],
+            ['8.5', true],
             ['^8.5', true],
+            ['~8.5.0', true],
             ['8.5.*', true],
+            ['8.*', true],
         ];
     }
 
