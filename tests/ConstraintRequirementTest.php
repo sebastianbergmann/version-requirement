@@ -64,6 +64,15 @@ final class ConstraintRequirementTest extends TestCase
             ['*', '99.0.0', true],
             ['*', 'v1.2.3', true],
             ['*.*', '1.0.0', true],
+            ['2.x', '2.1.3', true],
+            ['2.x', '3.0.0', false],
+            ['2.x.x', '2.1.3', true],
+            ['1.2.x', '1.2.3', true],
+            ['1.2.x', '1.3.3', false],
+            ['2.10.X', '2.10.5', true],
+            ['2.10.X', '2.11.0', false],
+            ['0.x', '0.0.0', true],
+            ['x', '1.2.3', true],
 
             ['^1.0', '1.5.0', true],
             ['^1.0', '2.0.0', false],
@@ -130,6 +139,8 @@ final class ConstraintRequirementTest extends TestCase
             ['1.2.* || 2.*', '1.2.3', true],
             ['1.2.* || 2.*', '2.1.3', true],
             ['1.2.* || 2.*', '3.1.3', false],
+            ['1.2.x || 2.x', '2.1.3', true],
+            ['1.2.x || 2.x', '1.1.3', false],
             ['0.1.20 || 1.2.4', '1.2.3', false],
             ['0.1.20 || 1.2.4', '1.2.4', true],
 
@@ -173,6 +184,9 @@ final class ConstraintRequirementTest extends TestCase
             ['^8 ||'],
             ['^1.2 ^1'],
             ['1.0.0 - 2.0.0'],
+            ['^2.x'],
+            ['~2.0.x'],
+            ['2.x.1'],
         ];
     }
 

@@ -30,8 +30,8 @@ use function trim;
  */
 final readonly class VersionConstraintParser
 {
-    private const string SYNTAX     = '/^[\^~*]?v?[\d.*]+(?:-.*)?$/i';
-    private const string CONSTRAINT = '/^(?P<operator>[\^~])?v?(?P<major>\d+|\*)(?:\.(?P<minor>\d+|\*)(?:\.(?P<patch>\d+|\*))?)?(?:-.*)?$/i';
+    private const string SYNTAX     = '/^[\^~*]?v?[\d.*x]+(?:-.*)?$/i';
+    private const string CONSTRAINT = '/^(?P<operator>[\^~])?v?(?P<major>\d+|[*x])(?:\.(?P<minor>\d+|[*x])(?:\.(?P<patch>\d+|[*x]))?)?(?:-.*)?$/i';
 
     /**
      * Returns true when the given string uses the syntax of a version constraint,
@@ -84,9 +84,9 @@ final readonly class VersionConstraintParser
         }
 
         $operator = $matches['operator'];
-        $major    = $matches['major'];
-        $minor    = $matches['minor'];
-        $patch    = $matches['patch'];
+        $major    = $this->normalizeWildcard($matches['major']);
+        $minor    = $this->normalizeWildcard($matches['minor']);
+        $patch    = $this->normalizeWildcard($matches['patch']);
 
         if ($operator !== null && in_array('*', [$major, $minor, $patch], true)) {
             return null;
@@ -150,5 +150,13 @@ final readonly class VersionConstraintParser
         }
 
         return new VersionRange($lowerBound, new Version($major, $minor, $patch + 1));
+    }
+
+    /**
+     * "x" and "X" are wildcards just like "*": "8.5.x" means the same as "8.5.*", for example.
+     */
+    private function normalizeWildcard(?string $level): ?string
+    {
+        return $level === 'x' || $level === 'X' ? '*' : $level;
     }
 }
