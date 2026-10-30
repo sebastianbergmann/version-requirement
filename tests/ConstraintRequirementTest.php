@@ -114,8 +114,9 @@ final class ConstraintRequirementTest extends TestCase
             ['~1.2-beta', '1.2.0', true],
             ['~201903.205830.1-stable', '201903.205830.5', true],
             ['~201903.205830.1-stable', '201903.205831.0', false],
-            ['~0.3', '0.3.9', true],
-            ['~0.3', '0.4.0', false],
+            ['~0.3', '0.2.9', false],
+            ['~0.3', '0.9.0', true],
+            ['~0.3', '1.0.0', false],
             ['~0.3.1', '0.3.5', true],
             ['~0.3.1', '0.4.0', false],
 
