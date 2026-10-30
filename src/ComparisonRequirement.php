@@ -62,6 +62,11 @@ final readonly class ComparisonRequirement extends Requirement
         return $this->version;
     }
 
+    public function operator(): VersionComparisonOperator
+    {
+        return $this->operator;
+    }
+
     public function isComplete(): bool
     {
         return substr_count($this->version, '.') === 2;

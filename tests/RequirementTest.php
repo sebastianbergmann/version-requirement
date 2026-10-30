@@ -132,6 +132,7 @@ final class RequirementTest extends TestCase
         $this->assertInstanceOf(ComparisonRequirement::class, $requirement);
         $this->assertSame('>= 1.0', $requirement->asString());
         $this->assertSame('1.0', $requirement->version());
+        $this->assertSame('>=', $requirement->operator()->asString());
     }
 
     public function testUsesGreaterThanOrEqualWhenComparisonHasNoOperator(): void
