@@ -10,8 +10,6 @@
 namespace SebastianBergmann\VersionRequirement;
 
 use function preg_match;
-use PharIo\Version\UnsupportedVersionConstraintException;
-use PharIo\Version\VersionConstraintParser;
 
 /**
  * @immutable
@@ -30,21 +28,17 @@ abstract readonly class Requirement
      */
     public static function from(string $versionRequirement): self
     {
-        try {
-            return new ConstraintRequirement(
-                (new VersionConstraintParser)->parse(
-                    $versionRequirement,
+        if ((new VersionConstraintParser)->looksLikeVersionConstraint($versionRequirement)) {
+            return new ConstraintRequirement($versionRequirement);
+        }
+
+        if (preg_match(self::VERSION_COMPARISON, $versionRequirement, $matches) > 0) {
+            return new ComparisonRequirement(
+                $matches['version'],
+                new VersionComparisonOperator(
+                    $matches['operator'] !== '' ? $matches['operator'] : '>=',
                 ),
             );
-        } catch (UnsupportedVersionConstraintException) {
-            if (preg_match(self::VERSION_COMPARISON, $versionRequirement, $matches) > 0) {
-                return new ComparisonRequirement(
-                    $matches['version'],
-                    new VersionComparisonOperator(
-                        $matches['operator'] !== '' ? $matches['operator'] : '>=',
-                    ),
-                );
-            }
         }
 
         throw new InvalidVersionRequirementException($versionRequirement);

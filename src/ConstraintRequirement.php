@@ -9,11 +9,6 @@
  */
 namespace SebastianBergmann\VersionRequirement;
 
-use function assert;
-use function preg_replace;
-use PharIo\Version\Version;
-use PharIo\Version\VersionConstraint;
-
 /**
  * @immutable
  *
@@ -21,35 +16,54 @@ use PharIo\Version\VersionConstraint;
  */
 final readonly class ConstraintRequirement extends Requirement
 {
-    private VersionConstraint $constraint;
+    /**
+     * @var non-empty-string
+     */
+    private string $constraint;
 
-    public function __construct(VersionConstraint $constraint)
+    /**
+     * @var non-empty-list<VersionRange>
+     */
+    private array $ranges;
+
+    /**
+     * @param non-empty-string $constraint
+     *
+     * @throws InvalidVersionRequirementException
+     */
+    public function __construct(string $constraint)
     {
         $this->constraint = $constraint;
+        $this->ranges     = (new VersionConstraintParser)->parse($constraint);
     }
 
+    /**
+     * Pre-release suffixes and build metadata are ignored: "8.5.0-dev" satisfies
+     * "^8.5", for example. Returns false when the given string does not start
+     * with a version number.
+     */
     public function isSatisfiedBy(string $version): bool
     {
-        return $this->constraint->complies(
-            new Version($this->sanitize($version)),
-        );
+        $version = Version::from($version);
+
+        if ($version === null) {
+            return false;
+        }
+
+        foreach ($this->ranges as $range) {
+            if ($range->contains($version)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function asString(): string
     {
-        return $this->constraint->asString();
-    }
-
-    private function sanitize(string $version): string
-    {
-        $sanitized = preg_replace(
-            '/^(\d+\.\d+(?:.\d+)?).*$/',
-            '$1',
-            $version,
-        );
-
-        assert($sanitized !== null);
-
-        return $sanitized;
+        return $this->constraint;
     }
 }

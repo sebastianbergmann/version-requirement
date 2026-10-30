@@ -9,7 +9,6 @@
  */
 namespace SebastianBergmann\VersionRequirement;
 
-use PharIo\Version\VersionConstraintParser;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Small;
@@ -19,26 +18,15 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Requirement::class)]
 #[CoversClass(ComparisonRequirement::class)]
-#[CoversClass(ConstraintRequirement::class)]
 #[CoversClass(InvalidVersionRequirementException::class)]
+#[CoversClass(VersionConstraintParser::class)]
+#[UsesClass(ConstraintRequirement::class)]
+#[UsesClass(VersionRange::class)]
+#[UsesClass(Version::class)]
 #[UsesClass(VersionComparisonOperator::class)]
 #[Small]
 final class RequirementTest extends TestCase
 {
-    /**
-     * @return non-empty-list<array{string, string, bool}>
-     */
-    public static function constraintProvider(): array
-    {
-        return [
-            ['1.0.0', '1.0.0', true],
-            ['1.0.0', '2.0.0', false],
-            ['^1.0', '1.5.0', true],
-            ['^1.0', '2.0.0', false],
-            ['^8.4', '8.4.1-dev', true],
-        ];
-    }
-
     /**
      * @return non-empty-list<array{non-empty-string, string, string, bool}>
      */
@@ -105,6 +93,14 @@ final class RequirementTest extends TestCase
         Requirement::from('invalid');
     }
 
+    public function testCannotBeCreatedFromStringWithInvalidVersionConstraint(): void
+    {
+        $this->expectException(InvalidVersionRequirementException::class);
+        $this->expectExceptionMessage('"^8.*" is not a valid version requirement: expected a version constraint (such as "^8.1", "~8.1.0", or "8.1.*") or a version comparison (such as ">= 8.1.0")');
+
+        Requirement::from('^8.*');
+    }
+
     /**
      * @param non-empty-string $versionRequirement
      */
@@ -113,17 +109,6 @@ final class RequirementTest extends TestCase
     public function testCanBeCheckedForCompleteness(string $versionRequirement, bool $complete): void
     {
         $this->assertSame($complete, Requirement::from($versionRequirement)->isComplete());
-    }
-
-    #[DataProvider('constraintProvider')]
-    #[TestDox('Version constraint "$constraint" is satisfied by version "$version": $satisfied')]
-    public function testVersionConstraintCanBeCheckedAgainstVersion(string $constraint, string $version, bool $satisfied): void
-    {
-        $requirement = new ConstraintRequirement(
-            (new VersionConstraintParser)->parse($constraint),
-        );
-
-        $this->assertSame($satisfied, $requirement->isSatisfiedBy($version));
     }
 
     /**
