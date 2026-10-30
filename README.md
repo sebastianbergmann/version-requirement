@@ -4,7 +4,13 @@
 
 # sebastian/version-requirement
 
-Library for working with version requirements, extracted from `phpunit/phpunit`.
+Library for checking whether a version satisfies a version requirement such as `^8.4` or `>= 8.4.0`, extracted from `phpunit/phpunit`.
+
+## Scope
+
+This library was extracted from PHPUnit, where it implements the version requirements of the `#[RequiresPhp]`, `#[RequiresPhpExtension]`, and `#[RequiresPhpunit]` attributes. These requirements are checked against the version of PHP (`PHP_VERSION`), the version of a PHP extension (`phpversion()`), and the version of PHPUnit.
+
+The scope of this library is what PHPUnit needs for this. Anything that PHPUnit does not need is out of scope, even when Composer supports it. If you need to work with Composer's version constraints, use [composer/semver](https://github.com/composer/semver) instead.
 
 ## Installation
 
@@ -19,3 +25,83 @@ If you only need this library during development, for instance to run your proje
 ```
 composer require --dev sebastian/version-requirement
 ```
+
+## Usage
+
+```php
+<?php declare(strict_types=1);
+use SebastianBergmann\VersionRequirement\Requirement;
+
+$requirement = Requirement::from('^8.4 || ^9.0');
+
+var_dump($requirement->isSatisfiedBy(PHP_VERSION));
+```
+
+`Requirement::from()` throws an `InvalidVersionRequirementException` when the given string is not a valid version requirement.
+
+A version requirement is either a version constraint or a version comparison:
+
+| Version requirement     | Satisfied by                                                        |
+|-------------------------|---------------------------------------------------------------------|
+| `8.5.1`                 | `8.5.1`                                                             |
+| `8.5`, `8.5.*`, `8.5.x` | `>= 8.5.0` and `< 8.6.0`                                            |
+| `8`, `8.*`, `8.x`       | `>= 8.0.0` and `< 9.0.0`                                            |
+| `*`, `x`                | any version                                                         |
+| `^8.5.1`                | `>= 8.5.1` and `< 9.0.0`                                            |
+| `^0.5.1`                | `>= 0.5.1` and `< 0.6.0`                                            |
+| `^0.0.5`                | `>= 0.0.5` and `< 0.0.6`                                            |
+| `~8.5`                  | `>= 8.5.0` and `< 9.0.0`                                            |
+| `~8.5.1`                | `>= 8.5.1` and `< 8.6.0`                                            |
+| `^7.4 \|\| ^8.0`        | versions that satisfy `^7.4` or `^8.0`                              |
+| `>= 8.5.0`              | versions for which `version_compare($version, '8.5.0', '>=')` holds |
+
+A version constraint may use a `v` prefix (`^v8.5`) and a pre-release suffix (`^8.5.0-RC1`). A version comparison may use the operators `<`, `<=`, `>`, `>=`, `=`, `==`, `!=`, and `<>`.
+
+## Differences to Composer
+
+Version constraints use the syntax of [Composer's version constraints](https://getcomposer.org/doc/articles/versions.md), and the caret (`^`), tilde (`~`), and wildcard (`*`, `x`) operators as well as `||` work like they do in Composer. There are differences, however, and each of them has a reason.
+
+### A version without operator matches all releases of that version
+
+`8.5` means `>= 8.5.0` and `< 8.6.0`, and `8` means `>= 8.0.0` and `< 9.0.0`. Composer interprets `8.5` as exactly `8.5.0`.
+
+**Why:** `#[RequiresPhp('8.5')]` requires PHP 8.5, not PHP 8.5.0. A version that consists of major, minor, and patch level, such as `8.5.1`, is matched exactly, just like in Composer.
+
+### Version constraints ignore pre-release suffixes
+
+A version constraint ignores pre-release suffixes, both its own and the one of the version that it is checked against: `8.5.0-dev` and `8.5.0RC1` are treated as `8.5.0`. For example, `8.5.0` is satisfied by `8.5.0-dev`, and `^8.5.0-RC2` is satisfied by `8.5.0RC1`. Composer orders pre-releases (`dev` < `alpha` < `beta` < `RC` < stable), so neither of these examples satisfies its version constraint in Composer.
+
+A suffix still has to be valid, though: just like in Composer, it has to be a stability such as `-dev`, `-alpha1`, `-beta.2`, `-RC1`, or `-stable`.
+
+**Why:** PHPUnit checks version requirements against `PHP_VERSION` and `phpversion()`. Development builds and release candidates of PHP report versions such as `8.5.0-dev` and `8.5.0RC1`, and the versions of PHP extensions do not follow a common format. PHPUnit treats a pre-release as the version it is a pre-release of.
+
+### Version comparisons use `version_compare()`
+
+A version comparison such as `>= 8.5.0` is evaluated using PHP's `version_compare()` function, whereas Composer normalizes versions before it compares them. This leads to different results:
+
+* `<= 8.5` is not satisfied by `8.5.0` because `version_compare()` considers `8.5.0` to be greater than `8.5`. Composer treats `8.5` as `8.5.0`. `Requirement::isComplete()` returns `false` for such a version comparison, and PHPUnit warns about it.
+* `< 8.5.0` is satisfied by `8.5.0RC1`. Composer excludes the pre-releases of `8.5.0` from `< 8.5.0`.
+* A version without operator that is not a valid version constraint, such as `8.5.0RC1` (pre-release suffix without `-`), is a version comparison with an implied `>=` operator. Composer interprets `8.5.0RC1` as exactly `8.5.0-RC1`.
+
+**Why:** This is how PHPUnit evaluates version comparisons, and existing tests rely on it. `version_compare()` is the function PHP provides for comparing "PHP-standardized" version numbers such as `PHP_VERSION`.
+
+### Less syntax
+
+The following syntax that Composer supports is not supported:
+
+* Hyphen ranges: `1.0 - 2.0`
+* Combining version requirements with AND: `>=8.1 <9.0`, `>=8.1, <9.0`
+* Combining version comparisons with `||`, or a version comparison with a version constraint: `>=8.1 || <7.0`, `^8.1 || >=9.0`
+* A `v` prefix in a version comparison: `>= v8.5.0` (the version that is checked may have one, though)
+* Build metadata: `^1.2.3+build`
+* Versions with more than three numbers: `1.2.3.4`
+* Stability flags: `^8.1@dev`
+* Branch names and aliases: `dev-main`, `2.x-dev`, `1.0 as 2.0`
+
+**Why:** PHPUnit does not need it. A requirement on the version of PHP, a PHP extension, or PHPUnit can be expressed with a version constraint (with alternatives combined using `||`, if needed) or with a single version comparison.
+
+### Stricter validation
+
+Composer accepts some malformed version constraints, such as `^1.`, `~1.`, and `1.2.`, because they have historically been common. This library rejects them.
+
+**Why:** PHPUnit reports an invalid version requirement as an error for the test that uses it. A mistyped version requirement should be noticed instead of silently being interpreted.
