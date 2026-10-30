@@ -41,6 +41,25 @@ final class RequirementTest extends TestCase
     }
 
     /**
+     * @return non-empty-list<array{non-empty-string, string, bool}>
+     */
+    public static function comparisonStringProvider(): array
+    {
+        return [
+            ['>=1.0.0', '1.0.0', true],
+            ['>=  1.0.0', '1.0.1', true],
+            ['> 1.0.0', '1.0.0', false],
+            ["<\t2.0.0", '0.2.9', true],
+            ['<= 2.0.0', '2.0.0', true],
+            ['<2.0.0', '2.0.0', false],
+            ['>= 1', '1.0.0', true],
+            ['< 1.2', '1.1.1', true],
+            ['>=1.2', '1.1.1', false],
+            ['>=0.1.97', '0.1.93', false],
+        ];
+    }
+
+    /**
      * @return non-empty-list<array{non-empty-string, bool}>
      */
     public static function completenessProvider(): array
@@ -71,6 +90,10 @@ final class RequirementTest extends TestCase
             ['^8.4 '],
             [' ^8.4'],
             ["1.0\nfoo"],
+            ['^'],
+            ['>2.0 ||| <=3.0'],
+            ['>=1.2.1 >=1.2.3'],
+            ['1.0.0 - 2.0.0'],
             ['>= 8.5.0Rc1'],
             ['>= 8.5.0BETA1'],
         ];
@@ -174,6 +197,19 @@ final class RequirementTest extends TestCase
             new VersionComparisonOperator($operator),
         );
 
+        $this->assertSame($satisfied, $requirement->isSatisfiedBy($version));
+    }
+
+    /**
+     * @param non-empty-string $versionRequirement
+     */
+    #[DataProvider('comparisonStringProvider')]
+    #[TestDox('Comparison "$versionRequirement" is satisfied by version "$version": $satisfied')]
+    public function testSimpleComparisonCreatedFromStringCanBeCheckedAgainstVersion(string $versionRequirement, string $version, bool $satisfied): void
+    {
+        $requirement = Requirement::from($versionRequirement);
+
+        $this->assertInstanceOf(ComparisonRequirement::class, $requirement);
         $this->assertSame($satisfied, $requirement->isSatisfiedBy($version));
     }
 }
