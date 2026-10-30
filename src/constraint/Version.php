@@ -10,6 +10,7 @@
 namespace SebastianBergmann\VersionRequirement;
 
 use const PREG_UNMATCHED_AS_NULL;
+use function assert;
 use function preg_match;
 
 /**
@@ -21,8 +22,19 @@ use function preg_match;
  */
 final readonly class Version
 {
+    /**
+     * @var non-negative-int
+     */
     private int $major;
+
+    /**
+     * @var non-negative-int
+     */
     private int $minor;
+
+    /**
+     * @var non-negative-int
+     */
     private int $patch;
 
     /**
@@ -38,9 +50,21 @@ final readonly class Version
             return null;
         }
 
-        return new self((int) $matches[1], (int) $matches[2], (int) $matches[3]);
+        $major = (int) $matches[1];
+        $minor = (int) $matches[2];
+        $patch = (int) $matches[3];
+
+        // The regular expression only matches digits
+        assert($major >= 0 && $minor >= 0 && $patch >= 0);
+
+        return new self($major, $minor, $patch);
     }
 
+    /**
+     * @param non-negative-int $major
+     * @param non-negative-int $minor
+     * @param non-negative-int $patch
+     */
     public function __construct(int $major, int $minor, int $patch)
     {
         $this->major = $major;

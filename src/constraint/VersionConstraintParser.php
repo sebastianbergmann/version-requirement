@@ -11,6 +11,7 @@ namespace SebastianBergmann\VersionRequirement;
 
 use const PREG_UNMATCHED_AS_NULL;
 use function array_map;
+use function assert;
 use function explode;
 use function in_array;
 use function preg_match;
@@ -120,12 +121,17 @@ final readonly class VersionConstraintParser
 
         return $this->range(
             $operator,
-            (int) $major,
-            $minor !== null ? (int) $minor : null,
-            $patch !== null ? (int) $patch : null,
+            $this->toInteger($major),
+            $minor !== null ? $this->toInteger($minor) : null,
+            $patch !== null ? $this->toInteger($patch) : null,
         );
     }
 
+    /**
+     * @param non-negative-int  $major
+     * @param ?non-negative-int $minor
+     * @param ?non-negative-int $patch
+     */
     private function range(?string $operator, int $major, ?int $minor, ?int $patch): VersionRange
     {
         // "8.*", "^8", and "~8" are satisfied by 8.x.y
@@ -162,9 +168,25 @@ final readonly class VersionConstraintParser
 
     /**
      * "x" and "X" are wildcards just like "*": "8.5.x" means the same as "8.5.*", for example.
+     *
+     * @return ($level is null ? null : string)
      */
     private function normalizeWildcard(?string $level): ?string
     {
         return $level === 'x' || $level === 'X' ? '*' : $level;
+    }
+
+    /**
+     * Must only be called for a level that consists of digits ("8", not "*").
+     *
+     * @return non-negative-int
+     */
+    private function toInteger(string $level): int
+    {
+        $integer = (int) $level;
+
+        assert($integer >= 0);
+
+        return $integer;
     }
 }
