@@ -71,6 +71,23 @@ final class RequirementTest extends TestCase
             ['^8.4 '],
             [' ^8.4'],
             ["1.0\nfoo"],
+            ['>= 8.5.0Rc1'],
+            ['>= 8.5.0BETA1'],
+        ];
+    }
+
+    /**
+     * @return non-empty-list<array{non-empty-string, non-empty-string}>
+     */
+    public static function preReleaseComparisonProvider(): array
+    {
+        return [
+            ['>= 8.5.0RC1', '8.5.0RC1'],
+            ['>= 8.5.0RC12', '8.5.0RC12'],
+            ['>= 8.5.0rc1', '8.5.0rc1'],
+            ['>= 8.5.0alpha12', '8.5.0alpha12'],
+            ['>= 8.5.0beta2', '8.5.0beta2'],
+            ['>= 8.5.0dev', '8.5.0dev'],
         ];
     }
 
@@ -98,6 +115,20 @@ final class RequirementTest extends TestCase
         $this->assertInstanceOf(ComparisonRequirement::class, $requirement);
         $this->assertSame('>= 1.0.0dev', $requirement->asString());
         $this->assertSame('1.0.0dev', $requirement->version());
+    }
+
+    /**
+     * @param non-empty-string $versionRequirement
+     * @param non-empty-string $version
+     */
+    #[DataProvider('preReleaseComparisonProvider')]
+    #[TestDox('Can be created from string "$versionRequirement" with pre-release version')]
+    public function testCanBeCreatedFromStringWithPreReleaseVersion(string $versionRequirement, string $version): void
+    {
+        $requirement = Requirement::from($versionRequirement);
+
+        $this->assertInstanceOf(ComparisonRequirement::class, $requirement);
+        $this->assertSame($version, $requirement->version());
     }
 
     /**
