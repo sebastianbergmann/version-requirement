@@ -36,6 +36,10 @@ final class ConstraintRequirementTest extends TestCase
             ['v1.0.0', '1.0.0', true],
             ['V1.0.0', '1.0.0', true],
             ['1.0.0-dev', '1.0.0', true],
+            ['1.0.0-RC1', '1.0.0', true],
+            ['1.0.0-alpha1-dev', '1.0.0', true],
+            ['1.0.0-patch.1', '1.0.0', true],
+            ['~1.2-b2', '1.2.0', true],
 
             ['8', '8.0.0', true],
             ['8', '8.9.9', true],
@@ -187,6 +191,10 @@ final class ConstraintRequirementTest extends TestCase
             ['^2.x'],
             ['~2.0.x'],
             ['2.x.1'],
+            ['1.0.0-'],
+            ['1.0.0-dev<1.0.5-dev'],
+            ['1.0.0-dev+build'],
+            ['1.0.0-meh'],
         ];
     }
 

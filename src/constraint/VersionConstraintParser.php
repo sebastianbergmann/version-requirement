@@ -31,7 +31,7 @@ use function trim;
 final readonly class VersionConstraintParser
 {
     private const string SYNTAX     = '/^[\^~*]?v?[\d.*x]+(?:-.*)?$/i';
-    private const string CONSTRAINT = '/^(?P<operator>[\^~])?v?(?P<major>\d+|[*x])(?:\.(?P<minor>\d+|[*x])(?:\.(?P<patch>\d+|[*x]))?)?(?:-.*)?$/i';
+    private const string CONSTRAINT = '/^(?P<operator>[\^~])?v?(?P<major>\d+|[*x])(?:\.(?P<minor>\d+|[*x])(?:\.(?P<patch>\d+|[*x]))?)?(?:-(?:dev|(?:stable|beta|b|rc|alpha|a|patch|pl|p)(?:[.-]?\d+)*(?:[.-]?dev)?))?$/i';
 
     /**
      * Returns true when the given string uses the syntax of a version constraint,
