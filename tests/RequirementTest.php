@@ -99,6 +99,8 @@ final class RequirementTest extends TestCase
             ['1.0.0 - 2.0.0'],
             ['>= 8.5.0Rc1'],
             ['>= 8.5.0BETA1'],
+            ['1.0.0dev'],
+            ['8.5.0RC1'],
         ];
     }
 
@@ -133,15 +135,6 @@ final class RequirementTest extends TestCase
         $this->assertSame('>= 1.0', $requirement->asString());
         $this->assertSame('1.0', $requirement->version());
         $this->assertSame('>=', $requirement->operator()->asString());
-    }
-
-    public function testUsesGreaterThanOrEqualWhenComparisonHasNoOperator(): void
-    {
-        $requirement = Requirement::from('1.0.0dev');
-
-        $this->assertInstanceOf(ComparisonRequirement::class, $requirement);
-        $this->assertSame('>= 1.0.0dev', $requirement->asString());
-        $this->assertSame('1.0.0dev', $requirement->version());
     }
 
     /**

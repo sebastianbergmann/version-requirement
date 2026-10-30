@@ -55,7 +55,7 @@ A version requirement is either a version constraint or a version comparison:
 | `^7.4 \|\| ^8.0`        | versions that satisfy `^7.4` or `^8.0`                              |
 | `>= 8.5.0`              | versions for which `version_compare($version, '8.5.0', '>=')` holds |
 
-A version constraint may use a `v` prefix (`^v8.5`) and a pre-release suffix (`^8.5.0-RC1`). A version comparison may use the operators `<`, `<=`, `>`, `>=`, `=`, `==`, `!=`, and `<>`.
+A version constraint may use a `v` prefix (`^v8.5`) and a pre-release suffix (`^8.5.0-RC1`). A version comparison has to use one of the operators `<`, `<=`, `>`, `>=`, `=`, `==`, `!=`, and `<>`.
 
 ## Differences to Composer
 
@@ -81,7 +81,6 @@ A version comparison such as `>= 8.5.0` is evaluated using PHP's `version_compar
 
 * `<= 8.5` is not satisfied by `8.5.0` because `version_compare()` considers `8.5.0` to be greater than `8.5`. Composer treats `8.5` as `8.5.0`. `Requirement::isComplete()` returns `false` for such a version comparison, and PHPUnit warns about it.
 * `< 8.5.0` is satisfied by `8.5.0RC1`. Composer excludes the pre-releases of `8.5.0` from `< 8.5.0`.
-* A version without operator that is not a valid version constraint, such as `8.5.0RC1` (pre-release suffix without `-`), is a version comparison with an implied `>=` operator. Composer interprets `8.5.0RC1` as exactly `8.5.0-RC1`.
 
 **Why:** This is how PHPUnit evaluates version comparisons, and existing tests rely on it. `version_compare()` is the function PHP provides for comparing "PHP-standardized" version numbers such as `PHP_VERSION`.
 

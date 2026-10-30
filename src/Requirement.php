@@ -18,7 +18,7 @@ use function preg_match;
  */
 abstract readonly class Requirement
 {
-    private const string VERSION_COMPARISON = "/^(?P<operator>!=|<|<=|<>|=|==|>|>=)?\s*(?P<version>[\d\.-]+(dev|(RC|rc|alpha|beta)[\d\.]+)?)[ \t]*\r?$/";
+    private const string VERSION_COMPARISON = "/^(?P<operator>!=|<|<=|<>|=|==|>|>=)\s*(?P<version>[\d\.-]+(dev|(RC|rc|alpha|beta)[\d\.]+)?)[ \t]*\r?$/";
 
     /**
      * @param non-empty-string $versionRequirement
@@ -35,9 +35,7 @@ abstract readonly class Requirement
         if (preg_match(self::VERSION_COMPARISON, $versionRequirement, $matches) > 0) {
             return new ComparisonRequirement(
                 $matches['version'],
-                new VersionComparisonOperator(
-                    $matches['operator'] !== '' ? $matches['operator'] : '>=',
-                ),
+                new VersionComparisonOperator($matches['operator']),
             );
         }
 
