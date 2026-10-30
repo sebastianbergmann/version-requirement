@@ -195,6 +195,9 @@ final class ConstraintRequirementTest extends TestCase
             ['1.0.0-dev<1.0.5-dev'],
             ['1.0.0-dev+build'],
             ['1.0.0-meh'],
+            ['*-dev'],
+            ['8.5.*-dev'],
+            ['2.x-dev'],
         ];
     }
 

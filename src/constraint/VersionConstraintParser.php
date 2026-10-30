@@ -31,7 +31,7 @@ use function trim;
 final readonly class VersionConstraintParser
 {
     private const string SYNTAX     = '/^[\^~*]?v?[\d.*x]+(?:-.*)?$/i';
-    private const string CONSTRAINT = '/^(?P<operator>[\^~])?v?(?P<major>\d+|[*x])(?:\.(?P<minor>\d+|[*x])(?:\.(?P<patch>\d+|[*x]))?)?(?:-(?:dev|(?:stable|beta|b|rc|alpha|a|patch|pl|p)(?:[.-]?\d+)*(?:[.-]?dev)?))?$/i';
+    private const string CONSTRAINT = '/^(?P<operator>[\^~])?v?(?P<major>\d+|[*x])(?:\.(?P<minor>\d+|[*x])(?:\.(?P<patch>\d+|[*x]))?)?(?P<suffix>-(?:dev|(?:stable|beta|b|rc|alpha|a|patch|pl|p)(?:[.-]?\d+)*(?:[.-]?dev)?))?$/i';
 
     /**
      * Returns true when the given string uses the syntax of a version constraint,
@@ -88,7 +88,8 @@ final readonly class VersionConstraintParser
         $minor    = $this->normalizeWildcard($matches['minor']);
         $patch    = $this->normalizeWildcard($matches['patch']);
 
-        if ($operator !== null && in_array('*', [$major, $minor, $patch], true)) {
+        // A wildcard cannot be combined with an operator ("^8.*") or a suffix ("8.*-dev")
+        if (($operator !== null || $matches['suffix'] !== null) && in_array('*', [$major, $minor, $patch], true)) {
             return null;
         }
 
