@@ -56,6 +56,9 @@ final class RequirementTest extends TestCase
             ['< 1.2', '1.1.1', true],
             ['>=1.2', '1.1.1', false],
             ['>=0.1.97', '0.1.93', false],
+            ['>=0.1.97', 'v0.1.97', true],
+            ['>=0.1.97', 'V0.1.97', true],
+            ['>=0.1.97', 'v0.1.93', false],
         ];
     }
 

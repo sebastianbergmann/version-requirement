@@ -9,6 +9,8 @@
  */
 namespace SebastianBergmann\VersionRequirement;
 
+use function preg_match;
+use function substr;
 use function substr_count;
 use function version_compare;
 
@@ -36,6 +38,11 @@ final readonly class ComparisonRequirement extends Requirement
 
     public function isSatisfiedBy(string $version): bool
     {
+        // version_compare() does not understand a "v" prefix such as in "v8.5.0"
+        if (preg_match('/^v\d/i', $version) === 1) {
+            $version = substr($version, 1);
+        }
+
         return version_compare($version, $this->version, $this->operator->asString());
     }
 
