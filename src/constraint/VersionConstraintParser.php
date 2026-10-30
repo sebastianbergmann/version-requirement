@@ -127,11 +127,15 @@ final readonly class VersionConstraintParser
 
         $lowerBound = new Version($major, $minor, $patch ?? 0);
 
-        // "^8.5" is satisfied by 8.x.y from 8.5.0, but "^0.5" only by 0.5.y; "~8.5" means the same as "^8.5"
+        // "^8.5.1" is satisfied by 8.x.y from 8.5.1, "^0.5.1" by 0.5.y from 0.5.1, and "^0.0.1" by 0.0.1 only; "~8.5" means the same as "^8.5"
         if ($operator === '^' || ($operator === '~' && $patch === null)) {
             return new VersionRange(
                 $lowerBound,
-                $major === 0 ? new Version(0, $minor + 1, 0) : new Version($major + 1, 0, 0),
+                match (true) {
+                    $major > 0                    => new Version($major + 1, 0, 0),
+                    $minor > 0 || $patch === null => new Version(0, $minor + 1, 0),
+                    default                       => new Version(0, 0, $patch + 1),
+                },
             );
         }
 
