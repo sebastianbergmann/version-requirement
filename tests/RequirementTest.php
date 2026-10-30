@@ -59,6 +59,21 @@ final class RequirementTest extends TestCase
         ];
     }
 
+    /**
+     * @return non-empty-list<array{non-empty-string}>
+     */
+    public static function invalidProvider(): array
+    {
+        return [
+            ['invalid'],
+            ['foo >= 1.0'],
+            ['^8.4 || >= 9'],
+            ['^8.4 '],
+            [' ^8.4'],
+            ["1.0\nfoo"],
+        ];
+    }
+
     public function testCanBeCreatedFromStringWithVersionConstraint(): void
     {
         $requirement = Requirement::from('^1.0');
@@ -85,12 +100,17 @@ final class RequirementTest extends TestCase
         $this->assertSame('1.0.0dev', $requirement->version());
     }
 
-    public function testCannotBeCreatedFromInvalidString(): void
+    /**
+     * @param non-empty-string $versionRequirement
+     */
+    #[DataProvider('invalidProvider')]
+    #[TestDox('Cannot be created from invalid string "$versionRequirement"')]
+    public function testCannotBeCreatedFromInvalidString(string $versionRequirement): void
     {
         $this->expectException(InvalidVersionRequirementException::class);
-        $this->expectExceptionMessage('"invalid" is not a valid version requirement: expected a version constraint (such as "^8.1", "~8.1.0", or "8.1.*") or a version comparison (such as ">= 8.1.0")');
+        $this->expectExceptionMessage('"' . $versionRequirement . '" is not a valid version requirement: expected a version constraint (such as "^8.1", "~8.1.0", or "8.1.*") or a version comparison (such as ">= 8.1.0")');
 
-        Requirement::from('invalid');
+        Requirement::from($versionRequirement);
     }
 
     public function testCannotBeCreatedFromStringWithInvalidVersionConstraint(): void
