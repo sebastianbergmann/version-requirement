@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a197b73b64d21884efa71024bfcec843",
+    "content-hash": "2e1e189c1cdebc2892cbd7a8fa4adaf0",
     "packages": [],
     "packages-dev": [
         {
@@ -213,7 +213,8 @@
                 "issues": "https://github.com/phar-io/version/issues",
                 "source": "https://github.com/phar-io/version/tree/3.2.1"
             },
-            "time": "2022-02-21T01:04:05+00:00"
+            "time": "2022-02-21T01:04:05+00:00",
+            "published-time": "2022-02-21T01:04:30+00:00"
         },
         {
             "name": "phpstan/extension-installer",
@@ -383,7 +384,8 @@
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
                 "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.1.1"
             },
-            "time": "2026-10-06T18:12:32+00:00"
+            "time": "2026-10-06T18:12:32+00:00",
+            "published-time": "2026-10-07T04:59:27+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
@@ -445,5 +447,5 @@
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
