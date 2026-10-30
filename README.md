@@ -41,19 +41,19 @@ var_dump($requirement->isSatisfiedBy(PHP_VERSION));
 
 A version requirement is either a version constraint or a version comparison:
 
-| Version requirement     | Satisfied by                                                        |
-|-------------------------|---------------------------------------------------------------------|
-| `8.5.1`                 | `8.5.1`                                                             |
-| `8.5`, `8.5.*`, `8.5.x` | `>= 8.5.0` and `< 8.6.0`                                            |
-| `8`, `8.*`, `8.x`       | `>= 8.0.0` and `< 9.0.0`                                            |
-| `*`, `x`                | any version                                                         |
-| `^8.5.1`                | `>= 8.5.1` and `< 9.0.0`                                            |
-| `^0.5.1`                | `>= 0.5.1` and `< 0.6.0`                                            |
-| `^0.0.5`                | `>= 0.0.5` and `< 0.0.6`                                            |
-| `~8.5`                  | `>= 8.5.0` and `< 9.0.0`                                            |
-| `~8.5.1`                | `>= 8.5.1` and `< 8.6.0`                                            |
-| `^7.4 \|\| ^8.0`        | versions that satisfy `^7.4` or `^8.0`                              |
-| `>= 8.5.0`              | versions for which `version_compare($version, '8.5.0', '>=')` holds |
+| Version requirement | Satisfied by                                                        |
+|---------------------|---------------------------------------------------------------------|
+| `8.5.1`             | `8.5.1`                                                             |
+| `8.5.*`, `8.5.x`    | `>= 8.5.0` and `< 8.6.0`                                            |
+| `8.*`, `8.x`        | `>= 8.0.0` and `< 9.0.0`                                            |
+| `*`, `x`            | any version                                                         |
+| `^8.5.1`            | `>= 8.5.1` and `< 9.0.0`                                            |
+| `^0.5.1`            | `>= 0.5.1` and `< 0.6.0`                                            |
+| `^0.0.5`            | `>= 0.0.5` and `< 0.0.6`                                            |
+| `~8.5`              | `>= 8.5.0` and `< 9.0.0`                                            |
+| `~8.5.1`            | `>= 8.5.1` and `< 8.6.0`                                            |
+| `^7.4 \|\| ^8.0`    | versions that satisfy `^7.4` or `^8.0`                              |
+| `>= 8.5.0`          | versions for which `version_compare($version, '8.5.0', '>=')` holds |
 
 A version constraint may use a `v` prefix (`^v8.5`) and a pre-release suffix (`^8.5.0-RC1`). A version comparison has to use one of the operators `<`, `<=`, `>`, `>=`, `=`, `==`, `!=`, and `<>`.
 
@@ -61,11 +61,13 @@ A version constraint may use a `v` prefix (`^v8.5`) and a pre-release suffix (`^
 
 Version constraints use the syntax of [Composer's version constraints](https://getcomposer.org/doc/articles/versions.md), and the caret (`^`), tilde (`~`), and wildcard (`*`, `x`) operators as well as `||` work like they do in Composer. There are differences, however, and each of them has a reason.
 
-### A version without operator matches all releases of that version
+### A version without operator has to consist of major, minor, and patch level
 
-`8.5` means `>= 8.5.0` and `< 8.6.0`, and `8` means `>= 8.0.0` and `< 9.0.0`. Composer interprets `8.5` as exactly `8.5.0`.
+A version without operator, such as `8.5.1`, is matched exactly, just like in Composer. It has to consist of major, minor, and patch level, though: `8.5` and `8`, which Composer interprets as exactly `8.5.0` and `8.0.0`, are rejected. So is `8.5.0RC1` (pre-release suffix without `-`), which Composer interprets as exactly `8.5.0-RC1`. This also applies to alternatives combined using `||`: `8.4 || 8.5` is rejected.
 
-**Why:** `#[RequiresPhp('8.5')]` requires PHP 8.5, not PHP 8.5.0. A version that consists of major, minor, and patch level, such as `8.5.1`, is matched exactly, just like in Composer.
+Use a wildcard (`8.5.*`), the caret operator (`^8.5`), or the tilde operator (`~8.5.0`) to match a range of versions, and a version comparison (`>= 8.5.0RC1`) to compare against a pre-release.
+
+**Why:** A version without operator that does not consist of major, minor, and patch level is ambiguous. `8.5` reads like "any release of 8.5", but Composer interprets it as exactly `8.5.0`, and older versions of PHPUnit interpreted `8.5.0RC1` as `>= 8.5.0RC1`. An ambiguous version requirement should be noticed instead of silently being interpreted in a way that was not intended.
 
 ### Version constraints ignore pre-release suffixes
 

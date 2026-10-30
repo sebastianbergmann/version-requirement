@@ -73,7 +73,6 @@ final class RequirementTest extends TestCase
             ['>= 8', false],
             ['<= 8', false],
             ['8.5.0', true],
-            ['8.5', true],
             ['^8.5', true],
             ['~8.5.0', true],
             ['8.5.*', true],
@@ -101,6 +100,8 @@ final class RequirementTest extends TestCase
             ['>= 8.5.0BETA1'],
             ['1.0.0dev'],
             ['8.5.0RC1'],
+            ['8.5'],
+            ['8.4 || 8.5'],
         ];
     }
 

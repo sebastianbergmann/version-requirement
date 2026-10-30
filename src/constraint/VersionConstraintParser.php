@@ -88,8 +88,15 @@ final readonly class VersionConstraintParser
         $minor    = $this->normalizeWildcard($matches['minor']);
         $patch    = $this->normalizeWildcard($matches['patch']);
 
+        $hasWildcard = in_array('*', [$major, $minor, $patch], true);
+
         // A wildcard cannot be combined with an operator ("^8.*") or a suffix ("8.*-dev")
-        if (($operator !== null || $matches['suffix'] !== null) && in_array('*', [$major, $minor, $patch], true)) {
+        if (($operator !== null || $matches['suffix'] !== null) && $hasWildcard) {
+            return null;
+        }
+
+        // A version without operator or wildcard has to consist of major, minor, and patch level ("8.5.0", not "8.5")
+        if ($operator === null && !$hasWildcard && $patch === null) {
             return null;
         }
 
@@ -121,7 +128,7 @@ final readonly class VersionConstraintParser
 
     private function range(?string $operator, int $major, ?int $minor, ?int $patch): VersionRange
     {
-        // "8", "^8", and "~8" are satisfied by 8.x.y
+        // "8.*", "^8", and "~8" are satisfied by 8.x.y
         if ($minor === null) {
             return new VersionRange(new Version($major, 0, 0), new Version($major + 1, 0, 0));
         }
@@ -145,7 +152,7 @@ final readonly class VersionConstraintParser
             return new VersionRange($lowerBound, new Version($major + 1, 0, 0));
         }
 
-        // "~8.5.1" is satisfied by 8.5.y from 8.5.1, "8.5" by 8.5.y
+        // "~8.5.1" is satisfied by 8.5.y from 8.5.1, "8.5.*" by 8.5.y
         if ($operator === '~' || $patch === null) {
             return new VersionRange($lowerBound, new Version($major, $minor + 1, 0));
         }
