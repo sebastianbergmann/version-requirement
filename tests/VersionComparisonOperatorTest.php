@@ -60,7 +60,7 @@ final class VersionComparisonOperatorTest extends TestCase
     public function testHasMessageForInvalidString(): void
     {
         $this->expectException(InvalidVersionOperatorException::class);
-        $this->expectExceptionMessage('"foo" is not a valid version_compare() operator: expected one of "<", "lt", "<=", "le", ">", "gt", ">=", "ge", "==", "=", "eq", "!=", "<>", "ne"');
+        $this->expectExceptionMessageIs('"foo" is not a valid version_compare() operator: expected one of "<", "lt", "<=", "le", ">", "gt", ">=", "ge", "==", "=", "eq", "!=", "<>", "ne"');
 
         new VersionComparisonOperator('foo');
     }

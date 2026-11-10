@@ -160,7 +160,7 @@ final class RequirementTest extends TestCase
     public function testCannotBeCreatedFromInvalidString(string $versionRequirement): void
     {
         $this->expectException(InvalidVersionRequirementException::class);
-        $this->expectExceptionMessage('"' . $versionRequirement . '" is not a valid version requirement: expected a version constraint (such as "^8.1", "~8.1.0", or "8.1.*") or a version comparison (such as ">= 8.1.0")');
+        $this->expectExceptionMessageIs('"' . $versionRequirement . '" is not a valid version requirement: expected a version constraint (such as "^8.1", "~8.1.0", or "8.1.*") or a version comparison (such as ">= 8.1.0")');
 
         Requirement::from($versionRequirement);
     }
@@ -168,7 +168,7 @@ final class RequirementTest extends TestCase
     public function testCannotBeCreatedFromStringWithInvalidVersionConstraint(): void
     {
         $this->expectException(InvalidVersionRequirementException::class);
-        $this->expectExceptionMessage('"^8.*" is not a valid version requirement: expected a version constraint (such as "^8.1", "~8.1.0", or "8.1.*") or a version comparison (such as ">= 8.1.0")');
+        $this->expectExceptionMessageIs('"^8.*" is not a valid version requirement: expected a version constraint (such as "^8.1", "~8.1.0", or "8.1.*") or a version comparison (such as ">= 8.1.0")');
 
         Requirement::from('^8.*');
     }
